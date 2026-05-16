@@ -385,14 +385,23 @@ let session = {
   otpSent: savedSession.otpSent || false
 };
 
-// استعادة حالة OTP إذا كانت موجودة
+// استعادة المسودة عند فتح التطبيق
 window.addEventListener('load', function() {
-  if(session.otpSent && session.id) {
-    document.getElementById("emailStep").style.display = "none";
-    document.getElementById("otpStep").style.display = "block";
-    document.getElementById("payOverlay").style.display = "flex";
-    document.getElementById("viewerOverlay").style.display = "none";
-  }
+  try {
+    var saved = sessionStorage.getItem('ims_otp_session');
+    if(saved) {
+      var data = JSON.parse(saved);
+      if(data.otpSent) {
+        session.otpSent = true;
+        session.email = data.email;
+        session.id = data.sessionId;
+        session.type = data.product;
+        document.getElementById("emailStep").style.display = "none";
+        document.getElementById("otpStep").style.display = "block";
+        document.getElementById("payOverlay").style.display = "flex";
+      }
+    }
+  } catch(e) {}
 });
 const TOTALS = { pdf: 42, audio: 21, video: 21 };
 
@@ -433,7 +442,14 @@ function endSession(){
 }
 
 function openPay(){ document.getElementById("payOverlay").style.display = "flex"; }
-function closePay(){ document.getElementById("payOverlay").style.display = "none"; }
+function closePay(){ 
+  // إلغاء الرمز وحذف المسودة عند الضغط على X
+  session.otpSent = false;
+  session.email = "";
+  try { sessionStorage.removeItem('ims_otp_session'); } catch(e) {}
+  document.getElementById("payOverlay").style.display = "none";
+  resetUI();
+}
 
 function resetUI(){
   document.getElementById("emailStep").style.display = "block";
@@ -459,7 +475,14 @@ async function sendOTP(btn) {
     console.log("OTP response:", d);
     session.otpSent = true;
     session.email = mail + "@gmail.com";
-    localStorage.setItem('ims_session', JSON.stringify(session));
+    try { 
+        sessionStorage.setItem('ims_otp_session', JSON.stringify({
+            otpSent: true,
+            email: mail + "@gmail.com",
+            sessionId: session.id,
+            product: session.type
+        })); 
+    } catch(e) {}
     document.getElementById("emailStep").style.display="none";
     document.getElementById("otpStep").style.display="block";
   } catch(e) {
@@ -486,7 +509,7 @@ async function verifyOTP(btn) {
     });
     let d = await res.json();
     if(d.status === "success") {
-      localStorage.removeItem('ims_session');
+      try { sessionStorage.removeItem('ims_otp_session'); } catch(e) {}
       session.otpSent = false;
       document.getElementById("otpStep").style.display="none";
       document.getElementById("successStep").style.display="block";
