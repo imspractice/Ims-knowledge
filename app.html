@@ -5,40 +5,329 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IMS Practice</title>
 <style>
-.btn-type { position:relative; padding:20px 25px; border:none; border-radius:16px; background:linear-gradient(135deg,#6a11cb,#2575fc); color:white; font-size:18px; font-weight:600; cursor:pointer; transition: all 0.3s ease; box-shadow:0 8px 20px rgba(0,0,0,0.25); display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1 1 130px; min-width:120px; max-width:220px; overflow:hidden; }
-.btn-type:hover { transform:translateY(-6px) scale(1.08); box-shadow:0 14px 30px rgba(0,0,0,0.35); background:linear-gradient(135deg,#8e2de2,#4a00e0); }
-.buttons { display:flex; gap:15px; justify-content:center; margin-top:50px; flex-wrap:wrap; padding:0 10px; direction:rtl; }
-.overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); display:none; align-items:center; justify-content:center; z-index:9999; direction:rtl; backdrop-filter: blur(12px); }
-.viewer { width:92%; height:92%; background:rgba(0,0,0,0.8); position:relative; display:flex; flex-direction:column; border-radius:24px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); box-shadow:0 25px 50px rgba(0,0,0,0.5); }
-#player { flex:1; position:relative; width:100%; background:transparent; overflow:hidden; direction: ltr !important; }
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #000;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-family: sans-serif;
+}
+
+/* زر التحميل */
+.download-btn {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #3DDC84;
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+}
+
+/* اللوقو */
+.logo-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 70px;
+}
+
+.logo-section img {
+  width: 220px;
+  max-width: 70vw;
+}
+
+/* الأزرار الثلاثة */
+.buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 20px 10px;
+  direction: rtl;
+}
+
+.btn-type {
+  padding: 20px 25px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg,#6a11cb,#2575fc);
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 130px;
+  min-width: 120px;
+  max-width: 220px;
+}
+
+.btn-type:hover { transform: translateY(-6px) scale(1.08); }
+
+/* الداك الأسفل */
+#miniAppDock {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.18);
+  direction: ltr;
+}
+
+#miniAppDock a {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,.14);
+  transition: all .28s ease;
+  text-decoration: none;
+}
+
+#miniAppDock a img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+#miniAppDock a:hover { transform: translateY(-6px) scale(1.12); }
+
+/* Overlays */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  direction: rtl;
+  backdrop-filter: blur(12px);
+}
+
+.viewer {
+  width: 92%; height: 92%;
+  background: rgba(0,0,0,0.8);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+
+#player { flex: 1; position: relative; width: 100%; overflow: hidden; direction: ltr !important; }
 #player iframe { position: absolute; top:0; left:0; width:100%; height:100%; border:none; }
-.viewer-footer { padding:15px; background:rgba(255,255,255,0.05); display:flex; justify-content:center; border-top:1px solid rgba(255,255,255,0.1); }
-.close { position:absolute; top:15px; left:15px; font-size:24px; color:white; cursor:pointer; z-index:11; background:rgba(255,255,255,0.1); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-.nav { position:absolute; top:80%; transform:translateY(-50%); font-size:28px; color:white; cursor:pointer; z-index:10; background:rgba(255,255,255,0.1); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition: all 0.3s ease; border:1px solid rgba(255,255,255,0.2); }
-.left { right:20px; }
-.right { left:20px; }
-.paybtn { padding:12px 25px; border:none; border-radius:30px; background:linear-gradient(135deg,#ff9800,#f44336); color:white; font-size:16px; font-weight:700; cursor:pointer; transition: all 0.3s ease; box-shadow:0 10px 20px rgba(244,67,54,0.3); }
-.paybox { background:rgba(255,255,255,0.95); width:90%; max-width:380px; padding:30px; border-radius:24px; text-align:center; direction:ltr; box-shadow:0 20px 60px rgba(0,0,0,0.5); position:relative; color: #333; }
-.paybox .close-pay { position:absolute; top:15px; right:15px; font-size:22px; color:#666; cursor:pointer; }
-.paybox input { padding:12px; width:65%; border:1px solid #ddd; border-radius:12px; outline:none; font-size:16px; margin-bottom:5px; text-align:center; }
-.action-btn { width:100%; padding:14px; border:none; border-radius:12px; background:linear-gradient(135deg,#6a11cb,#2575fc); color:white; font-size:16px; font-weight:600; cursor:pointer; transition: 0.3s; margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px; }
+
+.viewer-footer {
+  padding: 15px;
+  background: rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.close {
+  position: fixed;
+  top: 20px; left: 20px;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  z-index: 99999;
+  background: rgba(255,0,0,0.7);
+  width: 45px; height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.nav {
+  position: absolute;
+  top: 80%;
+  transform: translateY(-50%);
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+  background: rgba(255,255,255,0.1);
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.left { right: 20px; }
+.right { left: 20px; }
+
+.paybtn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(135deg,#ff9800,#f44336);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(244,67,54,0.3);
+}
+
+.paybox {
+  background: rgba(255,255,255,0.95);
+  width: 90%; max-width: 380px;
+  padding: 30px;
+  border-radius: 24px;
+  text-align: center;
+  direction: ltr;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  position: relative;
+  color: #333;
+}
+
+.paybox .close-pay {
+  position: absolute;
+  top: 15px; right: 15px;
+  font-size: 22px;
+  color: #666;
+  cursor: pointer;
+}
+
+.paybox input {
+  padding: 12px;
+  width: 65%;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  outline: none;
+  font-size: 16px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#6a11cb,#2575fc);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-.skeleton { width:100%; height:100%; background: linear-gradient(90deg, #121212 25%, #1d1d1d 50%, #121212 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
+
+.skeleton {
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, #121212 25%, #1d1d1d 50%, #121212 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
 @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-.btn-spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+
+.btn-spinner {
+  width: 18px; height: 18px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
-.audio-wrapper { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:white; }
+
+.audio-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+}
+
 audio { width: 80%; filter: invert(1); }
 </style>
 </head>
 <body>
 
+<!-- زر التحميل -->
+<a href="https://github.com/imspractice/Ims-knowledge/releases/download/v1.0/IMSPractice.apk" class="download-btn">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Android_logo_2019.png" width="22" height="22">
+  تحميل التطبيق
+</a>
+
+<!-- اللوقو -->
+<div class="logo-section">
+  <img src="https://imspractice.github.io/Ims-knowledge/logo.png" alt="IMS Practice">
+</div>
+
+<!-- الأزرار الثلاثة -->
 <div class="buttons">
   <button class="btn-type" onclick="startSession('pdf')">📄 PDF<span style="font-size:10px;opacity:0.7">عرض المستند</span></button>
   <button class="btn-type" onclick="startSession('audio')">🎵 صوت<span style="font-size:10px;opacity:0.7">استمع الآن</span></button>
   <button class="btn-type" onclick="startSession('video')">🎬 فيديو<span style="font-size:10px;opacity:0.7">شاهد الآن</span></button>
 </div>
 
+<!-- الداك الأسفل -->
+<div id="miniAppDock">
+  <a href="intent://omsolutionorders.blogspot.com#Intent;scheme=https;package=com.android.chrome;end">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgEbQLwupwfdzrXIH53u7MTblW_rCK56O40XTWMKXfoKT2fdqFGbq9WHVUTD-BgsHbAFUsQ-VTwmvsOiUY6eMF8XDwoisz0ArgMK8KAuWBGdTvlLg4OV1kR05mGMeEzJcUGhPWrU-SgT1cu8PsaaaF64DHMvEIgKGa2fjz3uQvn-qnJLdPrNgQEowyewtU/s1600/1000107915.png">
+  </a>
+  <a href="intent://nrsee.blogspot.com#Intent;scheme=https;package=com.android.chrome;end">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgX36uH_Qh68bIezfQ7iSNlJxTXjANbiEWuvlR1jl3BNpCB0h8W3Y1lTuLj9KKCkesSKQklYuyHjPsV3KjIeUtU8VOyH-gJydzHYgUghi2vrKyPj1bn7TH9-7uoUQu3WvUzgTCnnpcrEmV8QCZpZcSRbMk9T2R_DIzFvJLB-TqgnYJP6Z-70NlpbPLv3kY/s1600/1000100858.png">
+  </a>
+  <a href="intent://imspractice.blogspot.com#Intent;scheme=https;package=com.android.chrome;end">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjBlTejUeu2O_vMdkIv1tbDK9V4Rd0Rdr9a2n7T8NyG5hoZNZGMNAo24EvOFtnTN3EfmFbUKWCM4OS5v34CInBzRlGoSp4N1Vmps1Hdfy_u05cScxnD2Hw5w9v4DD9zV9eJn3dIxRdmuAlHDr4tF96yQcfTbrvoAcZMuGF3HnaLKeMZX0DV220nQk5l4Fw/s1600/1000090977.png">
+  </a>
+  <a href="intent://wa.me/c/249914985264#Intent;scheme=https;package=com.android.chrome;end">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+  </a>
+</div>
+
+<!-- Overlays -->
 <div class="overlay" id="viewerOverlay">
   <div class="viewer">
     <div class="close" onclick="endSession()">✕</div>
@@ -46,7 +335,7 @@ audio { width: 80%; filter: invert(1); }
     <div class="nav right" onclick="next()">❯</div>
     <div id="player"></div>
     <div class="viewer-footer">
-        <button class="paybtn" onclick="openPay()">🏷️ تحصل عليه من هنا</button>
+      <button class="paybtn" onclick="openPay()">🏷️ تحصل عليه من هنا</button>
     </div>
   </div>
 </div>
@@ -56,34 +345,32 @@ audio { width: 80%; filter: invert(1); }
     <div class="close-pay" onclick="closePay()">✕</div>
     <h3 id="productName" style="margin-bottom:20px;">تفاصيل المعاملة</h3>
     <div id="emailStep">
-      <div style="display:flex;gap:5px;align-items:center;width:100%;justify-content:center; direction:ltr; margin-bottom:15px;">
+      <div style="display:flex;gap:5px;align-items:center;width:100%;justify-content:center;direction:ltr;margin-bottom:15px;">
         <input id="gmailUser" placeholder="البريد الإلكتروني">
-        <span style="font-weight:bold; color:#444;">@gmail.com</span>
+        <span style="font-weight:bold;color:#444;">@gmail.com</span>
       </div>
       <button id="sendBtn" class="action-btn" onclick="sendOTP(this)">
-         <div class="btn-spinner" id="sendSpinner"></div>
-         <span>أرسل رمز التحقق</span>
+        <div class="btn-spinner" id="sendSpinner"></div>
+        <span>أرسل رمز التحقق</span>
       </button>
     </div>
     <div id="otpStep" style="display:none;">
       <p style="margin-bottom:15px;">أدخل الرمز المكون من 6 أرقام</p>
-      <input id="otpInput" style="letter-spacing:5px; font-weight:bold;" maxlength="6">
+      <input id="otpInput" style="letter-spacing:5px;font-weight:bold;" maxlength="6">
       <button id="verifyBtn" class="action-btn" onclick="verifyOTP(this)">
-         <div class="btn-spinner" id="verifySpinner"></div>
-         <span>تأكيد الرمز</span>
+        <div class="btn-spinner" id="verifySpinner"></div>
+        <span>تأكيد الرمز</span>
       </button>
     </div>
     <div id="successStep" style="display:none;">
-      <div style="color:#00a86b; font-size:22px; font-weight:bold; margin-bottom:20px;">✓ تم بنجاح</div>
+      <div style="color:#00a86b;font-size:22px;font-weight:bold;margin-bottom:20px;">✓ تم بنجاح</div>
       <button class="action-btn" onclick="closePay()">إغلاق</button>
     </div>
   </div>
 </div>
 
 <script>
-// 🔥 الرابط الجديد للباك إند
 const BASE_URL = "https://ims-backend-siaw.onrender.com";
-
 let session = {type:"", index:0, id:"", started:false};
 const TOTALS = { pdf: 42, audio: 21, video: 21 };
 
@@ -98,7 +385,6 @@ function render(){
   if(!session.started) return;
   let player = document.getElementById("player");
   player.innerHTML = `<div class="skeleton"></div>`;
-
   fetch(`${BASE_URL}/${session.type}?index=${session.index}&session=${session.id}`)
   .then(res => res.json())
   .then(data => {
@@ -143,8 +429,7 @@ async function sendOTP(btn) {
   txt.innerText = "جاري الإرسال...";
   try {
     const res = await fetch(`${BASE_URL}/otp`, {
-      method:"POST",
-      mode: "cors",
+      method:"POST", mode:"cors",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id})
     });
@@ -153,7 +438,6 @@ async function sendOTP(btn) {
     document.getElementById("emailStep").style.display="none";
     document.getElementById("otpStep").style.display="block";
   } catch(e) {
-    console.error("Error:", e);
     alert("خطأ في الاتصال: " + e.message);
     btn.disabled = false;
   }
@@ -170,7 +454,11 @@ async function verifyOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري التحقق...";
   try {
-    let res = await fetch(`${BASE_URL}/otp`, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({action:"verify", otp:code, session:session.id})});
+    let res = await fetch(`${BASE_URL}/otp`, {
+      method:"POST", mode:"cors",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({action:"verify", otp:code, session:session.id})
+    });
     let d = await res.json();
     if(d.status === "success") {
       document.getElementById("otpStep").style.display="none";
