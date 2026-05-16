@@ -142,11 +142,19 @@ async function sendOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري الإرسال...";
   try {
-    await fetch(`${BASE_URL}/otp`, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id})});
+    const res = await fetch(`${BASE_URL}/otp`, {
+      method:"POST",
+      mode: "cors",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id})
+    });
+    const d = await res.json();
+    console.log("OTP response:", d);
     document.getElementById("emailStep").style.display="none";
     document.getElementById("otpStep").style.display="block";
   } catch(e) {
-    alert("خطأ في الاتصال");
+    console.error("Error:", e);
+    alert("خطأ في الاتصال: " + e.message);
     btn.disabled = false;
   }
   spinner.style.display = "none";
