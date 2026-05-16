@@ -313,16 +313,16 @@ audio { width: 80%; filter: invert(1); }
 
 <!-- الداك الأسفل -->
 <div id="miniAppDock">
-  <a href="intent://omsolutionorders.blogspot.com#Intent;scheme=https;package=com.android.chrome;end">
+  <a href="https://omsolutionorders.blogspot.com" target="_blank">
     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgEbQLwupwfdzrXIH53u7MTblW_rCK56O40XTWMKXfoKT2fdqFGbq9WHVUTD-BgsHbAFUsQ-VTwmvsOiUY6eMF8XDwoisz0ArgMK8KAuWBGdTvlLg4OV1kR05mGMeEzJcUGhPWrU-SgT1cu8PsaaaF64DHMvEIgKGa2fjz3uQvn-qnJLdPrNgQEowyewtU/s1600/1000107915.png">
   </a>
-  <a href="intent://nrsee.blogspot.com#Intent;scheme=https;package=com.android.chrome;end">
+  <a href="https://nrsee.blogspot.com" target="_blank">
     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgX36uH_Qh68bIezfQ7iSNlJxTXjANbiEWuvlR1jl3BNpCB0h8W3Y1lTuLj9KKCkesSKQklYuyHjPsV3KjIeUtU8VOyH-gJydzHYgUghi2vrKyPj1bn7TH9-7uoUQu3WvUzgTCnnpcrEmV8QCZpZcSRbMk9T2R_DIzFvJLB-TqgnYJP6Z-70NlpbPLv3kY/s1600/1000100858.png">
   </a>
-  <a href="intent://imspractice.blogspot.com#Intent;scheme=https;package=com.android.chrome;end">
+  <a href="https://imspractice.blogspot.com" target="_blank">
     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjBlTejUeu2O_vMdkIv1tbDK9V4Rd0Rdr9a2n7T8NyG5hoZNZGMNAo24EvOFtnTN3EfmFbUKWCM4OS5v34CInBzRlGoSp4N1Vmps1Hdfy_u05cScxnD2Hw5w9v4DD9zV9eJn3dIxRdmuAlHDr4tF96yQcfTbrvoAcZMuGF3HnaLKeMZX0DV220nQk5l4Fw/s1600/1000090977.png">
   </a>
-  <a href="intent://wa.me/c/249914985264#Intent;scheme=https;package=com.android.chrome;end">
+  <a href="https://wa.me/c/249914985264" target="_blank">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
   </a>
 </div>
@@ -371,7 +371,29 @@ audio { width: 80%; filter: invert(1); }
 
 <script>
 const BASE_URL = "https://ims-backend-siaw.onrender.com";
-let session = {type:"", index:0, id:"", started:false};
+
+// استرجاع الجلسة المحفوظة
+let savedSession = {};
+try { savedSession = JSON.parse(localStorage.getItem('ims_session') || '{}'); } catch(e) {}
+
+let session = {
+  type: savedSession.type || "",
+  index: savedSession.index || 0,
+  id: savedSession.id || "",
+  started: false,
+  email: savedSession.email || "",
+  otpSent: savedSession.otpSent || false
+};
+
+// استعادة حالة OTP إذا كانت موجودة
+window.addEventListener('load', function() {
+  if(session.otpSent && session.id) {
+    document.getElementById("emailStep").style.display = "none";
+    document.getElementById("otpStep").style.display = "block";
+    document.getElementById("payOverlay").style.display = "flex";
+    document.getElementById("viewerOverlay").style.display = "none";
+  }
+});
 const TOTALS = { pdf: 42, audio: 21, video: 21 };
 
 function startSession(t){
@@ -435,6 +457,9 @@ async function sendOTP(btn) {
     });
     const d = await res.json();
     console.log("OTP response:", d);
+    session.otpSent = true;
+    session.email = mail + "@gmail.com";
+    localStorage.setItem('ims_session', JSON.stringify(session));
     document.getElementById("emailStep").style.display="none";
     document.getElementById("otpStep").style.display="block";
   } catch(e) {
@@ -461,6 +486,8 @@ async function verifyOTP(btn) {
     });
     let d = await res.json();
     if(d.status === "success") {
+      localStorage.removeItem('ims_session');
+      session.otpSent = false;
       document.getElementById("otpStep").style.display="none";
       document.getElementById("successStep").style.display="block";
     } else {
