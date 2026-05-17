@@ -388,7 +388,7 @@ let session = {
 // استعادة المسودة عند فتح التطبيق
 window.addEventListener('load', function() {
   try {
-    var saved = sessionStorage.getItem('ims_otp_session');
+    var saved = localStorage.getItem('ims_otp_session');
     if(saved) {
       var data = JSON.parse(saved);
       if(data.otpSent) {
@@ -446,7 +446,7 @@ function closePay(){
   // إلغاء الرمز وحذف المسودة عند الضغط على X
   session.otpSent = false;
   session.email = "";
-  try { sessionStorage.removeItem('ims_otp_session'); } catch(e) {}
+  try { localStorage.removeItem('ims_otp_session'); } catch(e) {}
   document.getElementById("payOverlay").style.display = "none";
   resetUI();
 }
@@ -476,7 +476,7 @@ async function sendOTP(btn) {
     session.otpSent = true;
     session.email = mail + "@gmail.com";
     try { 
-        sessionStorage.setItem('ims_otp_session', JSON.stringify({
+        localStorage.setItem('ims_otp_session', JSON.stringify({
             otpSent: true,
             email: mail + "@gmail.com",
             sessionId: session.id,
@@ -509,7 +509,7 @@ async function verifyOTP(btn) {
     });
     let d = await res.json();
     if(d.status === "success") {
-      try { sessionStorage.removeItem('ims_otp_session'); } catch(e) {}
+      try { localStorage.removeItem('ims_otp_session'); } catch(e) {}
       session.otpSent = false;
       document.getElementById("otpStep").style.display="none";
       document.getElementById("successStep").style.display="block";
