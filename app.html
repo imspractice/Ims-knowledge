@@ -520,5 +520,85 @@ async function verifyOTP(btn) {
   txt.innerText = "تأكيد الرمز";
 }
 </script>
+
+<script>
+const DRAFT_URL = "https://script.google.com/macros/s/AKfycbwSQUQrpGEHDUa9ziCulP6sUaNJnvxea1Hw1pI-wEd8wur-hABHs8AdibTN6O-_e9Z_mg/exec";
+
+// احفظ الحالة
+function saveState() {
+  if(!session.email) return;
+  fetch(DRAFT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "saveState",
+      username: session.email,
+      state: {
+        type: session.type,
+        index: session.index,
+        id: session.id,
+        email: session.email,
+        otpSent: session.otpSent,
+        price: session.price,
+        viewerOpen: document.getElementById("viewerOverlay").style.display === "flex",
+        payOpen: document.getElementById("payOverlay").style.display === "flex"
+      }
+    })
+  });
+}
+
+// استرجع الحالة
+async function loadState() {
+  const email = localStorage.getItem("ims_email");
+  if(!email) return;
+  try {
+    const res = await fetch(DRAFT_URL + "?action=loadState&username=" + email);
+    const data = await res.json();
+    if(data.success && data.state) {
+      const s = data.state;
+      session.type = s.type || "";
+      session.index = s.index || 0;
+      session.id = s.id || "";
+      session.email = s.email || "";
+      session.otpSent = s.otpSent || false;
+      session.price = s.price || "";
+      
+      if(s.type) {
+        session.started = true;
+        render();
+        if(s.viewerOpen) {
+          document.getElementById("viewerOverlay").style.display = "flex";
+        }
+        if(s.payOpen || s.otpSent) {
+          document.getElementById("payOverlay").style.display = "flex";
+          if(s.otpSent) {
+            document.getElementById("emailStep").style.display = "none";
+            document.getElementById("otpStep").style.display = "block";
+          }
+        }
+      }
+    }
+  } catch(e) {}
+}
+
+// احفظ الإيميل عند الإدخال
+window.addEventListener("load", function() {
+  loadState();
+  document.getElementById("gmailUser").addEventListener("input", function() {
+    localStorage.setItem("ims_email", this.value + "@gmail.com");
+    session.email = this.value + "@gmail.com";
+    saveState();
+  });
+});
+
+// احفظ عند كل تغيير مهم
+const _origStart = startSession;
+startSession = function(t) { _origStart(t); saveState(); };
+
+const _origNext = next;
+next = function() { _origNext(); saveState(); };
+
+const _origPrev = prev;
+prev = function() { _origPrev(); saveState(); };
+</script>
 </body>
 </html>
