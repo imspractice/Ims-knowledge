@@ -470,7 +470,7 @@ async function sendOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري الإرسال...";
   try {
-    const res = await fetch(BASE_URL, {
+    const res = await fetch(otpUrl, {
       method:"POST", mode:"cors",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id, price:session.price})
@@ -506,7 +506,7 @@ async function verifyOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري التحقق...";
   try {
-    let res = await fetch(BASE_URL, {
+    let res = await fetch(otpUrl, {
       method:"POST", mode:"cors",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"verify", otp:code, session:session.id, link:SITE_LINK, admin:ADMIN_EMAIL})
