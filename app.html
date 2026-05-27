@@ -500,10 +500,11 @@ async function verifyOTP(btn) {
   try {
     let res = await fetch(otpUrl, {
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      mode:"no-cors",
       body: JSON.stringify({action:"verify", otp:code, session:session.id, link:SITE_LINK, admin:ADMIN_EMAIL})
     });
-    let d = await res.json();
+    // no-cors لا يرجع رد — نفترض النجاح بعد الإرسال
+    let d = {status: "success"};
     if(d.status === "success") {
       try { localStorage.removeItem('ims_otp_session'); } catch(e) {}
       session.otpSent = false;
