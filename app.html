@@ -501,12 +501,10 @@ async function verifyOTP(btn) {
     let vParams = new URLSearchParams({
       action:"verify",
       otp: code,
-      session: session.id,
-      link: SITE_LINK,
-      admin: ADMIN_EMAIL
+      session: session.id
     });
-    fetch(otpUrl + "?" + vParams.toString(), {mode:"no-cors"});
-    let d = {status: "success"};
+    let vRes = await fetch(otpUrl + "?" + vParams.toString());
+    let d = await vRes.json();
     if(d.status === "success") {
       try { localStorage.removeItem('ims_otp_session'); } catch(e) {}
       session.otpSent = false;
