@@ -406,7 +406,7 @@ window.addEventListener('load', function() {
 const TOTALS = { pdf: 42, audio: 21, video: 21 };
 
 function startSession(t){
-  session.type = t; session.index = 0; session.id = "sess_" + Date.now();
+  session.type = t; session.index = 0; session.id = "sess_" + Date.now(); session.price = PRICES[t];
   session.started = true;
   document.getElementById("viewerOverlay").style.display = "flex";
   render();
@@ -469,7 +469,7 @@ async function sendOTP(btn) {
     const res = await fetch(BASE_URL, {
       method:"POST", mode:"cors",
       headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id})
+      body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id, price:session.price})
     });
     const d = await res.json();
     console.log("OTP response:", d);
@@ -505,7 +505,7 @@ async function verifyOTP(btn) {
     let res = await fetch(BASE_URL, {
       method:"POST", mode:"cors",
       headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({action:"verify", otp:code, session:session.id})
+      body: JSON.stringify({action:"verify", otp:code, session:session.id, link:SITE_LINK, admin:ADMIN_EMAIL})
     });
     let d = await res.json();
     if(d.status === "success") {
