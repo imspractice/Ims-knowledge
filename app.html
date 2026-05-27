@@ -507,7 +507,8 @@ async function verifyOTP(btn) {
   txt.innerText = "جاري التحقق...";
   try {
     let res = await fetch(otpUrl, {
-      method:"POST", mode:"cors",
+      method:"POST",
+      mode:"no-cors", mode:"cors",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"verify", otp:code, session:session.id, link:SITE_LINK, admin:ADMIN_EMAIL})
     });
