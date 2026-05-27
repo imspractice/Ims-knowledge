@@ -370,7 +370,7 @@ audio { width: 80%; filter: invert(1); }
 </div>
 
 <script>
-const BASE_URL = "https://ims-backend-siaw.onrender.com";
+const BASE_URL = "https://script.google.com/macros/s/AKfycbzT7HNibZxPgiBDeuc9BAQunlhMkN0d_BJT-cSrcm_DEl1wkGeJ4ZJmtXZn_IKJ48SL/exec";
 
 // استرجاع الجلسة المحفوظة
 let savedSession = {};
@@ -466,7 +466,7 @@ async function sendOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري الإرسال...";
   try {
-    const res = await fetch(`${BASE_URL}/otp`, {
+    const res = await fetch(BASE_URL, {
       method:"POST", mode:"cors",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id})
@@ -502,7 +502,7 @@ async function verifyOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري التحقق...";
   try {
-    let res = await fetch(`${BASE_URL}/otp`, {
+    let res = await fetch(BASE_URL, {
       method:"POST", mode:"cors",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"verify", otp:code, session:session.id})
