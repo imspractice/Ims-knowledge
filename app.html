@@ -498,7 +498,7 @@ async function verifyOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري التحقق...";
   try {
-    let res = await fetch(BASE_URL + "/otp", {
+    let res = await fetch(otpUrl, {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"verify", otp:code, session:session.id, link:SITE_LINK, admin:ADMIN_EMAIL})
