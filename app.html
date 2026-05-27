@@ -470,23 +470,15 @@ async function sendOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري الإرسال...";
   try {
-    const res = await fetch(otpUrl, {
-      method:"POST", mode:"cors",
-      headers:{"Content-Type":"application/json"},
+    // إرسال للـ GAS بدون انتظار رد
+    fetch(otpUrl, {
+      method:"POST",
+      mode:"no-cors",
       body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id, price:session.price})
     });
-    const d = await res.json();
-    console.log("OTP response:", d);
+    // انتقل مباشرة لخطوة الرمز
     session.otpSent = true;
     session.email = mail + "@gmail.com";
-    try { 
-        localStorage.setItem('ims_otp_session', JSON.stringify({
-            otpSent: true,
-            email: mail + "@gmail.com",
-            sessionId: session.id,
-            product: session.type
-        })); 
-    } catch(e) {}
     document.getElementById("emailStep").style.display="none";
     document.getElementById("otpStep").style.display="block";
   } catch(e) {
@@ -506,9 +498,8 @@ async function verifyOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري التحقق...";
   try {
-    let res = await fetch(otpUrl, {
+    let res = await fetch(BASE_URL + "/otp", {
       method:"POST",
-      mode:"no-cors", mode:"cors",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"verify", otp:code, session:session.id, link:SITE_LINK, admin:ADMIN_EMAIL})
     });
