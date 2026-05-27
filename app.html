@@ -498,12 +498,14 @@ async function verifyOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري التحقق...";
   try {
-    let res = await fetch(otpUrl, {
-      method:"POST",
-      mode:"no-cors",
-      body: JSON.stringify({action:"verify", otp:code, session:session.id, link:SITE_LINK, admin:ADMIN_EMAIL})
+    let vParams = new URLSearchParams({
+      action:"verify",
+      otp: code,
+      session: session.id,
+      link: SITE_LINK,
+      admin: ADMIN_EMAIL
     });
-    // no-cors لا يرجع رد — نفترض النجاح بعد الإرسال
+    fetch(otpUrl + "?" + vParams.toString(), {mode:"no-cors"});
     let d = {status: "success"};
     if(d.status === "success") {
       try { localStorage.removeItem('ims_otp_session'); } catch(e) {}
