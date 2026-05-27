@@ -470,17 +470,21 @@ async function sendOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري الإرسال...";
   try {
-    // إرسال للـ GAS بدون انتظار رد
-    await fetch(BASE_URL + "/otp", {
+    const res = await fetch(BASE_URL + "/otp", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id, price:session.price})
     });
-    // انتقل مباشرة لخطوة الرمز
-    session.otpSent = true;
-    session.email = mail + "@gmail.com";
-    document.getElementById("emailStep").style.display="none";
-    document.getElementById("otpStep").style.display="block";
+    const d = await res.json();
+    if(d.status === "sent") {
+      session.otpSent = true;
+      session.email = mail + "@gmail.com";
+      document.getElementById("emailStep").style.display="none";
+      document.getElementById("otpStep").style.display="block";
+    } else {
+      alert("خطأ في الإرسال");
+      btn.disabled = false;
+    }
   } catch(e) {
     alert("خطأ في الاتصال: " + e.message);
     btn.disabled = false;
@@ -498,12 +502,11 @@ async function verifyOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري التحقق...";
   try {
-    let vParams = new URLSearchParams({
-      action:"verify",
-      otp: code,
-      session: session.id
+    let vRes = await fetch(BASE_URL + "/otp", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({action:"verify", otp:code, session:session.id})
     });
-    let vRes = await fetch(otpUrl + "?" + vParams.toString());
     let d = await vRes.json();
     if(d.status === "success") {
       try { localStorage.removeItem('ims_otp_session'); } catch(e) {}
