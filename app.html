@@ -371,7 +371,7 @@ audio { width: 80%; filter: invert(1); }
 
 <script>
 const BASE_URL = "https://ims-backend-siaw.onrender.com";
-const otpUrl = "https://script.google.com/macros/s/AKfycbz-NzihNqnEt3KGQ15uoe7pWabCGnc5HdPC3bGc1r-JE0C8tkrxRam3aEJEP0xli7db/exec";
+const otpUrl = "https://script.google.com/macros/s/AKfycbz19H7tzL10rQe4e7kyJNsy1yJq2e11Uw1kiXSs2VegXbmrLUoFXOg2FPa5c5qtJrcX/exec";
 const PRICES = { pdf: "58$", audio: "62$", video: "90$" };
 const SITE_LINK = "https://imspractice.github.io/Ims-knowledge/app.html";
 const ADMIN_EMAIL = "imspractice9@gmail.com";
@@ -477,7 +477,7 @@ async function sendOTP(btn) {
       session: session.id,
       price: session.price
     });
-    await fetch("https://script.google.com/macros/s/AKfycbz-NzihNqnEt3KGQ15uoe7pWabCGnc5HdPC3bGc1r-JE0C8tkrxRam3aEJEP0xli7db/exec?" + sp.toString());
+    await fetch("https://script.google.com/macros/s/AKfycbz19H7tzL10rQe4e7kyJNsy1yJq2e11Uw1kiXSs2VegXbmrLUoFXOg2FPa5c5qtJrcX/exec?" + sp.toString());
     session.otpSent = true;
     session.email = mail + "@gmail.com";
     document.getElementById("emailStep").style.display="none";
@@ -504,7 +504,7 @@ async function verifyOTP(btn) {
       otp: code,
       session: session.id
     });
-    let vRes = await fetch("https://script.google.com/macros/s/AKfycbz-NzihNqnEt3KGQ15uoe7pWabCGnc5HdPC3bGc1r-JE0C8tkrxRam3aEJEP0xli7db/exec?" + vp.toString());
+    let vRes = await fetch("https://script.google.com/macros/s/AKfycbz19H7tzL10rQe4e7kyJNsy1yJq2e11Uw1kiXSs2VegXbmrLUoFXOg2FPa5c5qtJrcX/exec?" + vp.toString());
     let d = await vRes.json();
     if(d.status === "success") {
       try { localStorage.removeItem('ims_otp_session'); } catch(e) {}
