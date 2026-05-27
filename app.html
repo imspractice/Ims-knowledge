@@ -470,21 +470,18 @@ async function sendOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري الإرسال...";
   try {
-    const res = await fetch(BASE_URL + "/otp", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({action:"send", email:mail+"@gmail.com", product:session.type, session:session.id, price:session.price})
+    let sp = new URLSearchParams({
+      action:"send",
+      to: mail+"@gmail.com",
+      product: session.type,
+      session: session.id,
+      price: session.price
     });
-    const d = await res.json();
-    if(d.status === "sent") {
-      session.otpSent = true;
-      session.email = mail + "@gmail.com";
-      document.getElementById("emailStep").style.display="none";
-      document.getElementById("otpStep").style.display="block";
-    } else {
-      alert("خطأ في الإرسال");
-      btn.disabled = false;
-    }
+    await fetch("https://script.google.com/macros/s/AKfycbz-NzihNqnEt3KGQ15uoe7pWabCGnc5HdPC3bGc1r-JE0C8tkrxRam3aEJEP0xli7db/exec?" + sp.toString());
+    session.otpSent = true;
+    session.email = mail + "@gmail.com";
+    document.getElementById("emailStep").style.display="none";
+    document.getElementById("otpStep").style.display="block";
   } catch(e) {
     alert("خطأ في الاتصال: " + e.message);
     btn.disabled = false;
@@ -502,11 +499,12 @@ async function verifyOTP(btn) {
   spinner.style.display = "inline-block";
   txt.innerText = "جاري التحقق...";
   try {
-    let vRes = await fetch(BASE_URL + "/otp", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({action:"verify", otp:code, session:session.id})
+    let vp = new URLSearchParams({
+      action:"verify",
+      otp: code,
+      session: session.id
     });
+    let vRes = await fetch("https://script.google.com/macros/s/AKfycbz-NzihNqnEt3KGQ15uoe7pWabCGnc5HdPC3bGc1r-JE0C8tkrxRam3aEJEP0xli7db/exec?" + vp.toString());
     let d = await vRes.json();
     if(d.status === "success") {
       try { localStorage.removeItem('ims_otp_session'); } catch(e) {}
