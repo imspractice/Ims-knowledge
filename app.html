@@ -482,6 +482,8 @@ async function sendOTP(btn) {
     session.email = mail + "@gmail.com";
     document.getElementById("emailStep").style.display="none";
     document.getElementById("otpStep").style.display="block";
+    document.getElementById("otpProductName").innerText = session.type === "pdf" ? "📄 PDF" : session.type === "audio" ? "🎵 صوت" : "🎬 فيديو";
+    document.getElementById("otpPrice").innerText = session.price;
   } catch(e) {
     alert("خطأ في الاتصال: " + e.message);
     btn.disabled = false;
