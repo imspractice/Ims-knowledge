@@ -355,6 +355,10 @@ audio { width: 80%; filter: invert(1); }
       </button>
     </div>
     <div id="otpStep" style="display:none;">
+      <div style="background:#f0f4ff;border-radius:12px;padding:12px;margin-bottom:15px;text-align:center;">
+        <div id="otpProductName" style="font-size:16px;font-weight:bold;color:#333;"></div>
+        <div id="otpPrice" style="font-size:22px;font-weight:bold;color:#6a11cb;margin-top:5px;"></div>
+      </div>
       <p style="margin-bottom:15px;">أدخل الرمز المكون من 6 أرقام</p>
       <input id="otpInput" style="letter-spacing:5px;font-weight:bold;" maxlength="6">
       <button id="verifyBtn" class="action-btn" onclick="verifyOTP(this)">
